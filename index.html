@@ -20,11 +20,13 @@
     --teal-soft: #e3ecea;
     --rose: #d3a5ab;
     --rose-soft: #efe0e2;
+    --rose-hot: #f4c3cb;
     --danger: #a35c66;
     --radius: 14px;
     --safe-b: env(safe-area-inset-bottom, 0px);
   }
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  [hidden] { display: none !important; }
   html, body { margin: 0; background: var(--paper); color: var(--ink);
     font-family: "Noto Sans TC", -apple-system, "PingFang TC", "Microsoft JhengHei", sans-serif;
     font-size: 16px; line-height: 1.5; }
@@ -34,9 +36,11 @@
   /* ---------- 結算區 ---------- */
   .settle { background: var(--hero); color: #f4f4f6; padding: calc(20px + env(safe-area-inset-top, 0px)) 20px 22px;
     border-radius: 0 0 22px 22px; }
-  .settle h1 { margin: 0 0 14px; font-size: 14px; font-weight: 500; color: #b9c2cf; }
+  .hero-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+  .settle h1 { margin: 0; font-size: 17px; font-weight: 700; color: var(--rose-hot); letter-spacing: .04em; }
+  .pill-btn { padding: 6px 14px; border-radius: 999px; border: 1px solid #70809a; background: transparent;
+    color: #e6eaf0; font-size: 14px; }
   .transfer { font-size: 30px; font-weight: 700; line-height: 1.25; letter-spacing: .01em; }
-  .transfer small { display: block; font-size: 14px; font-weight: 400; color: #b9c2cf; margin-top: 4px; }
   .transfer .even { color: #b7d4cd; }
   .bar { display: flex; height: 10px; border-radius: 6px; overflow: hidden; margin: 18px 0 8px; background: #566376; }
   .bar i { display: block; height: 100%; transition: width .35s; }
@@ -69,11 +73,36 @@
   .item-name { font-weight: 500; word-break: break-all; }
   .item-amt { font-weight: 700; white-space: nowrap; }
   .item-meta { font-size: 13px; color: var(--ink-soft); margin-top: 2px; }
-  .item-meta .tag { color: var(--teal); font-weight: 500; }
   .item-actions { display: flex; gap: 8px; margin-top: 10px; }
   .item-actions button { flex: 1; padding: 8px; border-radius: 9px; border: 1px solid var(--line); background: #f9f9fb; font-size: 14px; }
   .item-actions .del { color: var(--danger); }
   .empty { text-align: center; color: var(--ink-soft); padding: 36px 20px; }
+
+  /* ---------- 結算紀錄頁 ---------- */
+  .h-head { background: var(--hero); color: #f4f4f6; padding: calc(20px + env(safe-area-inset-top, 0px)) 20px 20px;
+    border-radius: 0 0 22px 22px; display: flex; justify-content: space-between; align-items: center; }
+  .h-head h1 { margin: 0; font-size: 20px; font-weight: 700; }
+  .filter { display: flex; align-items: center; gap: 10px; padding: 18px 20px 6px; font-size: 14px; color: var(--ink-soft); }
+  .filter select { flex: 1; padding: 10px 12px; font: inherit; font-size: 16px; border: 1px solid var(--line);
+    border-radius: 10px; background: #fff; color: var(--ink); }
+  .rec-list { padding: 8px 14px 0; }
+  .rec { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); margin-bottom: 10px; overflow: hidden; }
+  .rec summary { list-style: none; cursor: pointer; padding: 14px; display: flex; justify-content: space-between;
+    align-items: center; gap: 10px; }
+  .rec summary::-webkit-details-marker { display: none; }
+  .rec summary::before { content: "▶"; font-size: 11px; color: var(--ink-soft); margin-right: 8px; transition: transform .2s; }
+  .rec[open] summary::before { transform: rotate(90deg); }
+  .rec-date { font-weight: 500; flex: 1; }
+  .rec-res { font-size: 14px; color: var(--teal); font-weight: 700; text-align: right; }
+  .rec-body { padding: 0 14px 14px; border-top: 1px solid var(--line); }
+  .rec-meta { font-size: 13px; color: var(--ink-soft); margin: 12px 0 6px; }
+  .tbl { width: 100%; border-collapse: collapse; font-size: 14px; }
+  .tbl th, .tbl td { padding: 6px 0; text-align: right; font-weight: 400; }
+  .tbl th:first-child, .tbl td:first-child { text-align: left; }
+  .tbl th { color: var(--ink-soft); font-size: 12px; border-bottom: 1px solid var(--line); }
+  .rec-sub { font-size: 13px; color: var(--ink-soft); margin: 14px 0 6px; }
+  .mini { padding: 8px 0; border-top: 1px dashed var(--line); }
+  .mini:first-of-type { border-top: 0; }
 
   /* ---------- 新增按鈕 ---------- */
   .fab { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(18px + var(--safe-b));
@@ -91,7 +120,7 @@
   label.f { display: block; font-size: 13px; color: var(--ink-soft); margin: 14px 0 6px; }
   input[type=text], input[type=date], input[type=number] { width: 100%; padding: 12px; font: inherit; font-size: 16px;
     border: 1px solid var(--line); border-radius: 10px; background: #fff; color: var(--ink); }
-  input:focus-visible, button:focus-visible { outline: 2px solid var(--teal); outline-offset: 2px; }
+  input:focus-visible, button:focus-visible, select:focus-visible { outline: 2px solid var(--teal); outline-offset: 2px; }
   .chips { display: flex; gap: 8px; flex-wrap: wrap; }
   .chip { padding: 10px 18px; border: 1px solid var(--line); border-radius: 999px; background: #fff; font-size: 16px; }
   .chip.on { background: var(--teal); border-color: var(--teal); color: #fff; font-weight: 500; }
@@ -111,32 +140,48 @@
   .spinner { width: 34px; height: 34px; border: 4px solid var(--line); border-top-color: var(--teal); border-radius: 50%;
     animation: spin .8s linear infinite; }
   @keyframes spin { to { transform: rotate(360deg); } }
-  @media (prefers-reduced-motion: reduce) { .sheet, .toast, .bar i { transition: none; } .spinner { animation-duration: 2s; } }
+  @media (prefers-reduced-motion: reduce) { .sheet, .toast, .bar i, .rec summary::before { transition: none; } .spinner { animation-duration: 2s; } }
 </style>
 </head>
 <body>
 
-<section class="settle" aria-live="polite">
-  <h1>目前待結算</h1>
-  <div class="transfer" id="transfer">載入中…</div>
-  <div class="bar"><i class="a" id="barA" style="width:50%"></i><i class="b" id="barB" style="width:50%"></i></div>
-  <div class="legend"><span>朱 實付 <b id="lgA">0</b></span><span>莊＋許 實付 <b id="lgB">0</b></span></div>
-  <div class="grid">
-    <div><span>目前總支出</span><strong id="total">0</strong></div>
-    <div><span>明細筆數</span><strong id="count">0</strong></div>
-  </div>
-  <details class="people">
-    <summary>查看每個人的實付與應分攤</summary>
-    <table>
-      <thead><tr><th></th><th>實付</th><th>應分攤</th></tr></thead>
-      <tbody id="peopleRows"></tbody>
-    </table>
-  </details>
-  <button class="settle-btn" id="settleBtn" disabled>結算並封存</button>
-</section>
+<!-- ================= 首頁 ================= -->
+<div id="viewMain">
+  <section class="settle" aria-live="polite">
+    <div class="hero-top">
+      <h1>目前待結算</h1>
+      <button class="pill-btn" id="toHistory">結算紀錄</button>
+    </div>
+    <div class="transfer" id="transfer">載入中…</div>
+    <div class="bar"><i class="a" id="barA" style="width:50%"></i><i class="b" id="barB" style="width:50%"></i></div>
+    <div class="legend"><span>K 實付 <b id="lgA">0</b></span><span>T＋J 實付 <b id="lgB">0</b></span></div>
+    <div class="grid">
+      <div><span>目前總支出</span><strong id="total">0</strong></div>
+      <div><span>明細筆數</span><strong id="count">0</strong></div>
+    </div>
+    <details class="people">
+      <summary>查看每個人的實付與應分攤</summary>
+      <table>
+        <thead><tr><th></th><th>實付</th><th>應分攤</th></tr></thead>
+        <tbody id="peopleRows"></tbody>
+      </table>
+    </details>
+    <button class="settle-btn" id="settleBtn" disabled>結算</button>
+  </section>
 
-<div class="list-head"><h2>目前明細</h2><span id="listNote"></span></div>
-<ul class="items" id="items"></ul>
+  <div class="list-head"><h2>目前明細</h2><span id="listNote"></span></div>
+  <ul class="items" id="items"></ul>
+</div>
+
+<!-- ================= 結算紀錄頁 ================= -->
+<div id="viewHistory" hidden>
+  <header class="h-head">
+    <h1>結算紀錄</h1>
+    <button class="pill-btn" id="backBtn">回首頁</button>
+  </header>
+  <div class="filter"><label for="monthSel">結算月份</label><select id="monthSel"></select></div>
+  <div class="rec-list" id="histList"></div>
+</div>
 
 <button class="fab" id="fab">新增支出</button>
 
@@ -173,16 +218,36 @@
 /* ★★ 部署 Apps Script 後，把網頁應用程式網址貼在這裡 ★★ */
 const API_URL = 'https://script.google.com/macros/s/AKfycbxD5dDDLSaIxKcBkBTqz5vofw9Ewf0d0vDkYsu-Z7mUsTIZl6TxjI1F2_WTilAtTIC1Hg/exec';
 
-const MEMBERS = ['朱', '莊', '許'];
+const MEMBERS = ['K', 'T', 'J'];
+const WK = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 let state = { expenses: [], summary: null };
+let histRecords = [];
 let editingId = null;
-let form = { payer: '朱', split: new Set(MEMBERS) };
+let form = { payer: 'K', split: new Set(MEMBERS) };
 
 const $ = id => document.getElementById(id);
 const fmt = n => 'NT$ ' + Number(n).toLocaleString('zh-TW', { maximumFractionDigits: 2 });
 const num = n => Number(n).toLocaleString('zh-TW', { maximumFractionDigits: 2 });
 const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+const pad = n => String(n).padStart(2, '0');
 const today = () => new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 10);
+
+/* 日期工具：統一成 yyyy-MM-dd，並顯示成 YYYY/MM/DD Mon */
+function isoDate(v) {
+  v = String(v);
+  if (/^\d{4}-\d{2}-\d{2}$/.test(v)) return v;
+  const d = new Date(v);
+  if (isNaN(d)) return v;
+  return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
+}
+function fmtDay(v) {
+  const iso = isoDate(v);
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso);
+  if (!m) return iso;
+  const d = new Date(+m[1], +m[2] - 1, +m[3]);
+  return m[1] + '/' + m[2] + '/' + m[3] + ' ' + WK[d.getDay()];
+}
+const splitText = s => s === 'ALL' ? '全部' : s.split(',').join('、');
 
 /* ---------- API ---------- */
 async function api(action, payload = {}) {
@@ -223,7 +288,17 @@ async function run(action, payload, okMsg) {
   }
 }
 
-/* ---------- 畫面 ---------- */
+/* ---------- 明細卡片（首頁與紀錄頁共用） ---------- */
+function itemHtml(ex, withActions) {
+  return '<div class="item-top"><span class="item-name">' + esc(ex.name) + '</span><span class="item-amt">' + fmt(ex.amount) + '</span></div>' +
+    '<div class="item-meta">' + esc(fmtDay(ex.date)) + '</div>' +
+    '<div class="item-meta">付款人 ' + esc(ex.payer) + '｜分攤：' + esc(splitText(ex.split)) + '</div>' +
+    (withActions
+      ? '<div class="item-actions"><button data-edit="' + esc(ex.id) + '">編輯</button><button class="del" data-del="' + esc(ex.id) + '">刪除</button></div>'
+      : '');
+}
+
+/* ---------- 首頁 ---------- */
 function render() {
   const s = state.summary;
   const t = s.transfer;
@@ -232,8 +307,7 @@ function render() {
   } else if (t.amount === 0) {
     $('transfer').innerHTML = '<span class="even">剛好打平</span>';
   } else {
-    $('transfer').innerHTML = esc(t.from) + ' 轉給 ' + esc(t.to) + '<br>' + fmt(t.amount) +
-      '<small>' + (t.to === '莊' ? '許與莊視為同一組，轉給莊即可' : '朱多付了，莊那邊轉給朱') + '</small>';
+    $('transfer').innerHTML = esc(t.from) + ' 轉給 ' + esc(t.to) + '<br>' + fmt(t.amount);
   }
 
   const a = s.groupA.paid, b = s.groupB.paid, sum = a + b;
@@ -247,18 +321,72 @@ function render() {
   $('settleBtn').disabled = s.count === 0;
 
   $('peopleRows').innerHTML = MEMBERS.map(m =>
-    '<tr><td>' + m + '</td><td>' + num(s.paid[m]) + '</td><td>' + num(s.owed[m]) + '</td></tr>').join('');
+    '<tr><td>' + m + '</td><td>' + num(s.paid[m] || 0) + '</td><td>' + num(s.owed[m] || 0) + '</td></tr>').join('');
 
   const list = state.expenses.slice().sort((x, y) =>
-    y.date.localeCompare(x.date) || y.createdAt - x.createdAt);
+    isoDate(y.date).localeCompare(isoDate(x.date)) || y.createdAt - x.createdAt);
   $('listNote').textContent = list.length ? '共 ' + list.length + ' 筆' : '';
-  $('items').innerHTML = list.length ? list.map(ex =>
-    '<li class="item">' +
-      '<div class="item-top"><span class="item-name">' + esc(ex.name) + '</span><span class="item-amt">' + fmt(ex.amount) + '</span></div>' +
-      '<div class="item-meta">' + esc(ex.date) + '　<span class="tag">' + esc(ex.payer) + ' 付</span>　分攤：' + esc(ex.split === 'ALL' ? '全部' : ex.split.replace(/,/g, '、')) + '</div>' +
-      '<div class="item-actions"><button data-edit="' + esc(ex.id) + '">編輯</button><button class="del" data-del="' + esc(ex.id) + '">刪除</button></div>' +
-    '</li>').join('') : '<li class="empty">還沒有支出，點下方「新增支出」開始記帳</li>';
+  $('items').innerHTML = list.length
+    ? list.map(ex => '<li class="item">' + itemHtml(ex, true) + '</li>').join('')
+    : '<li class="empty">還沒有支出，點下方「新增支出」開始記帳</li>';
 }
+
+/* ---------- 結算紀錄頁 ---------- */
+function recResult(sm) {
+  const t = sm.transfer;
+  return t.amount === 0 ? '剛好打平' : t.from + ' 轉給 ' + t.to + ' ' + fmt(t.amount);
+}
+
+function renderHistory() {
+  // 月份篩選
+  const months = Array.from(new Set(histRecords.map(r => r.settledAt.slice(0, 7)))).sort().reverse();
+  const cur = $('monthSel').value || 'all';
+  $('monthSel').innerHTML = '<option value="all">全部</option>' +
+    months.map(m => '<option value="' + m + '">' + m.replace('-', '/') + '</option>').join('');
+  $('monthSel').value = (cur === 'all' || months.indexOf(cur) >= 0) ? cur : 'all';
+
+  const sel = $('monthSel').value;
+  const list = histRecords.filter(r => sel === 'all' || r.settledAt.slice(0, 7) === sel);
+
+  $('histList').innerHTML = list.length ? list.map(r => {
+    const sm = r.summary;
+    const items = r.items.map(ex => '<div class="mini">' + itemHtml(ex, false) + '</div>').join('');
+    return '<details class="rec">' +
+      '<summary><span class="rec-date">' + esc(fmtDay(r.settledAt.slice(0, 10))) + '</span>' +
+      '<span class="rec-res">' + esc(recResult(sm)) + '</span></summary>' +
+      '<div class="rec-body">' +
+        '<div class="rec-meta">結算時間 ' + esc(r.settledAt.slice(0, 16).replace(/-/g, '/')) + '｜共 ' + sm.count + ' 筆｜總支出 ' + fmt(sm.total) + '</div>' +
+        '<table class="tbl"><thead><tr><th></th><th>實付</th><th>應分攤</th></tr></thead><tbody>' +
+          MEMBERS.map(m => '<tr><td>' + m + '</td><td>' + num(sm.paid[m] || 0) + '</td><td>' + num(sm.owed[m] || 0) + '</td></tr>').join('') +
+        '</tbody></table>' +
+        '<div class="rec-sub">當次明細</div>' + items +
+      '</div></details>';
+  }).join('') : '<div class="empty">還沒有結算紀錄</div>';
+}
+
+async function loadHistory() {
+  try {
+    const d = await api('history');
+    histRecords = d.records || [];
+    renderHistory();
+  } catch (e) {
+    toast(e.message || '讀取失敗', true);
+  }
+}
+
+/* ---------- 頁面切換（以網址 # 判斷，手機的返回鍵也能用） ---------- */
+function route() {
+  const h = location.hash === '#history';
+  $('viewMain').hidden = h;
+  $('viewHistory').hidden = !h;
+  $('fab').hidden = h;
+  window.scrollTo(0, 0);
+  if (h) loadHistory(); else run('getData');
+}
+window.addEventListener('hashchange', route);
+$('toHistory').onclick = () => { location.hash = 'history'; };
+$('backBtn').onclick = () => { location.hash = ''; };
+$('monthSel').onchange = renderHistory;
 
 /* ---------- 表單 ---------- */
 function renderChips() {
@@ -282,12 +410,14 @@ function openForm(ex) {
   $('formTitle').textContent = ex ? '編輯支出' : '新增支出';
   $('fName').value = ex ? ex.name : '';
   $('fAmount').value = ex ? ex.amount : '';
-  $('fDate').value = ex ? ex.date : today();
+  $('fDate').value = ex ? isoDate(ex.date) : today();
   if (ex) {
-    form.payer = ex.payer;
-    form.split = new Set(ex.split === 'ALL' ? MEMBERS : ex.split.split(','));
+    form.payer = MEMBERS.indexOf(ex.payer) >= 0 ? ex.payer : 'K';
+    const names = ex.split === 'ALL' ? MEMBERS : ex.split.split(',').filter(x => MEMBERS.indexOf(x) >= 0);
+    form.split = new Set(names.length ? names : MEMBERS);
   } else {
-    form.payer = localStorage.getItem('lastPayer') || '朱';
+    const last = localStorage.getItem('lastPayer');
+    form.payer = MEMBERS.indexOf(last) >= 0 ? last : 'K';
     form.split = new Set(MEMBERS);
   }
   renderChips();
@@ -357,12 +487,12 @@ $('items').onclick = e => {
 $('settleBtn').onclick = () => {
   const t = state.summary.transfer;
   const msg = (t.amount === 0 ? '目前剛好打平。' : t.from + ' 轉給 ' + t.to + ' ' + fmt(t.amount) + '。') +
-    '\n\n結算後這些明細會移到「歷史明細」，畫面會重新從 0 開始計算。確定結算嗎？';
-  if (confirm(msg)) run('settle', {}, '結算完成，已封存');
+    '\n\n結算後重新計算，確定結算嗎？';
+  if (confirm(msg)) run('settle', {}, '結算完成');
 };
 
 /* ---------- 啟動 ---------- */
-run('getData');
+route();
 </script>
 </body>
 </html>
